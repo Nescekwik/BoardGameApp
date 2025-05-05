@@ -18,7 +18,7 @@ CREATE TABLE Games (
     min_playtime INT,
     max_playtime INT,
     age_min INT,
-    rating INT
+    rating DECIMAL(4,2) DEFAULT NULL
 );
 
 CREATE TABLE Categories (
