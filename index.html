@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Game Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Board Game Catalog</h1>
+        <div class="user-menu">
+            <button id="userButton">User</button>
+            <div class="user-dropdown" id="userDropdown">
+                <button onclick="window.location.href='login.html'">Connexion</button>
+                <button>Profil</button>
+                <button>Log out</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="filters">
+        <label for="categoryFilter">Filter by category:</label>
+        <select id="categoryFilter">
+            <option value="all">All</option>
+            <option value="Strategy">Strategy</option>
+            <option value="Family">Family games</option>
+        </select>
+    </section>
+
+    <section id="gameList">
+        <!-- Games will be injected here by JS -->
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
