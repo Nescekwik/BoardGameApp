@@ -1,0 +1,322 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+.user-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.user-menu button {
+    background-color: #fff;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.user-menu button:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.user-dropdown button:hover {
+    background-color: #f4f4f4;
+}
+
+.filters {
+    margin: 20px;
+    text-align: center;
+}
+
+.filters label {
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+
+select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+select:hover {
+    border-color: #4CAF50;
+}
+
+#gameList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.game {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-height: 120px; /* Retracted height */
+}
+
+.game.expanded {
+    max-height: 500px; /* Expanded height */
+    transition: max-height 0.3s ease;
+}
+
+.game-header {
+    font-size: 1.5rem;
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.game-description {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.game-details {
+    display: none;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.game.expanded .game-details {
+    display: block;
+}
+
+.game a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.game a:hover {
+    background-color: #45a049;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 1.2rem;
+    cursor: pointer;
+    float: right;
+    margin-left: 10px;
+}
+
+.delete-button:hover {
+    color: darkred;
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #4CAF50;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #4CAF50;
+    background-color: #fff;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.submit-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.submit-button:hover {
+    background-color: #45a049;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #000;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Add Game Button */
+#addGameButton {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+    text-align: center;
+}
+
+.add-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
+
+#addGameButton:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 0.9rem;
+    }
+
+    .submit-button {
+        font-size: 0.9rem;
+    }
+}
