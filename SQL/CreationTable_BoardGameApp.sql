@@ -1,11 +1,12 @@
-
 CREATE TABLE Users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-	`password` VARCHAR(255) NOT NULL,
-    account_creation DATE NOT NULL
+    `password` VARCHAR(255) NOT NULL,
+    account_creation DATE NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE
 );
+
 
 CREATE TABLE Games (
     game_id INT PRIMARY KEY AUTO_INCREMENT,

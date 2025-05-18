@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>User Page</h1>
+        <button onclick="window.location.href='index.html'">Back to Catalog</button>
+    </header>
+
+    <section id="userProfile">
+        <img id="profilePicture" src="shark_shoes.jpeg" alt="Profile Picture" width="100" height="100" style="display:block;">
+        <h2 id="userName">User Name</h2>
+    </section>
+
+    <section>
+        <h2>Create a New List with a Game</h2>
+        <form id="createListForm">
+            <label for="newListName">List Name:</label>
+            <input type="text" id="newListName" name="newListName" placeholder="New List Name" required>
+
+            <label for="gameId">Game ID:</label>
+            <select id="gameId" name="gameId" required>
+                <option value="">-- Select a Game --</option>
+                <!-- Options will be dynamically populated -->
+            </select>
+
+            <button type="submit">Create List</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Add a Game to an Existing List</h2>
+        <form id="addGameToListForm">
+            <label for="existingListSelect">Select List:</label>
+            <select id="existingListSelect" required>
+                <option value="">-- Select a List --</option>
+                <!-- Options will be dynamically populated -->
+            </select>
+
+            <label for="existingGameSelect">Select Game:</label>
+            <select id="existingGameSelect" required>
+                <option value="">-- Select a Game --</option>
+                <!-- Options will be dynamically populated -->
+            </select>
+
+            <button type="submit">Add Game</button>
+        </form>
+    </section>
+
+    <section id="userLists">
+        <h2>Your Lists</h2>
+        <div id="listsContainer">
+            <!-- Lists and games will be dynamically populated -->
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || !user.user_id) {
+                alert('You must be logged in to access this page.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Fetch user profile
+            fetch('/api/user-profile', {
+                headers: { 'x-user-id': user.user_id }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('userName').textContent = data.name;
+                    // Always show the image, fallback to shark_shoes.jpeg if not found
+                    const img = document.getElementById('profilePicture');
+                    if (data.name && data.name.toLowerCase() === 'maxik') {
+                        img.src = 'shark_shoes.jpeg';
+                    } else if (data.profilePicture && data.profilePicture.trim() !== '') {
+                        img.src = data.profilePicture;
+                    } else {
+                        img.src = 'shark_shoes.jpeg';
+                    }
+                    img.style.display = 'block';
+                })
+                .catch(() => {
+                    // On error, always show the fallback image
+                    const img = document.getElementById('profilePicture');
+                    img.src = 'shark_shoes.jpeg';
+                    img.style.display = 'block';
+                });
+
+            // Populate games dropdowns
+            fetch('/api/games')
+                .then(response => response.json())
+                .then(data => {
+                    const gameSelect = document.getElementById('gameId');
+                    const existingGameSelect = document.getElementById('existingGameSelect');
+                    // Clear previous options except the first placeholder
+                    gameSelect.innerHTML = '<option value="">-- Select a Game --</option>';
+                    existingGameSelect.innerHTML = '<option value="">-- Select a Game --</option>';
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(game => {
+                            const option1 = document.createElement('option');
+                            option1.value = game.game_id;
+                            option1.textContent = `${game.game_id} - ${game.game_name}`;
+                            gameSelect.appendChild(option1);
+
+                            const option2 = document.createElement('option');
+                            option2.value = game.game_id;
+                            option2.textContent = `${game.game_id} - ${game.game_name}`;
+                            existingGameSelect.appendChild(option2);
+                        });
+                    } else {
+                        // If no games found, show a disabled option
+                        const noGamesOption = document.createElement('option');
+                        noGamesOption.value = '';
+                        noGamesOption.textContent = 'No games available';
+                        noGamesOption.disabled = true;
+                        gameSelect.appendChild(noGamesOption);
+                        existingGameSelect.appendChild(noGamesOption.cloneNode(true));
+                    }
+                })
+                .catch(() => {
+                    const gameSelect = document.getElementById('gameId');
+                    const existingGameSelect = document.getElementById('existingGameSelect');
+                    gameSelect.innerHTML = '<option value="">Failed to load games</option>';
+                    existingGameSelect.innerHTML = '<option value="">Failed to load games</option>';
+                });
+
+            // Populate existing lists dropdown
+            function populateExistingListsDropdown() {
+                fetch('/api/user-lists', {
+                    headers: { 'x-user-id': user.user_id }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const existingListSelect = document.getElementById('existingListSelect');
+                        existingListSelect.innerHTML = '<option value="">-- Select a List --</option>';
+                        data.forEach(list => {
+                            const option = document.createElement('option');
+                            option.value = list.list_name;
+                            option.textContent = list.list_name;
+                            existingListSelect.appendChild(option);
+                        });
+                    });
+            }
+            populateExistingListsDropdown();
+
+            // Fetch and display user lists
+            fetchUserLists();
+
+            // Handle form submission for creating a new list with a game
+            document.getElementById('createListForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newListName = document.getElementById('newListName').value;
+                const gameId = document.getElementById('gameId').value;
+                if (!gameId) {
+                    alert('Please select a game.');
+                    return;
+                }
+                fetch('/api/create-list', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-id': user.user_id
+                    },
+                    body: JSON.stringify({ listName: newListName, gameId })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('List created successfully!');
+                        fetchUserLists();
+                        populateExistingListsDropdown();
+                    } else {
+                        alert('Failed to create the list.');
+                    }
+                });
+            });
+
+            // Handle form submission for adding a game to an existing list
+            document.getElementById('addGameToListForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const listName = document.getElementById('existingListSelect').value;
+                const gameId = document.getElementById('existingGameSelect').value;
+                if (!listName || !gameId) {
+                    alert('Please select both a list and a game.');
+                    return;
+                }
+                fetch('/api/add-to-list', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-id': user.user_id
+                    },
+                    body: JSON.stringify({ gameId, listName })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Game added to the list!');
+                        fetchUserLists();
+                    } else {
+                        alert('Failed to add game to the list.');
+                    }
+                });
+            });
+        });
+
+        function fetchUserLists() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            fetch('/api/user-lists', {
+                headers: { 'x-user-id': user.user_id }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const listsContainer = document.getElementById('listsContainer');
+                    listsContainer.innerHTML = '';
+                    data.forEach(list => {
+                        const listDiv = document.createElement('div');
+                        listDiv.className = 'list';
+                        const listTitle = document.createElement('h3');
+                        listTitle.textContent = list.list_name;
+                        listDiv.appendChild(listTitle);
+                        const gamesList = document.createElement('ul');
+                        list.games.forEach(game => {
+                            const gameItem = document.createElement('li');
+                            gameItem.textContent = game.game_name + ' ';
+                            // Add remove button
+                            const removeBtn = document.createElement('button');
+                            removeBtn.textContent = 'Remove';
+                            removeBtn.style.marginLeft = '10px';
+                            removeBtn.onclick = function() {
+                                removeGameFromList(game.game_id, list.list_name);
+                            };
+                            gameItem.appendChild(removeBtn);
+                            gamesList.appendChild(gameItem);
+                        });
+                        listDiv.appendChild(gamesList);
+                        listsContainer.appendChild(listDiv);
+                    });
+                });
+        }
+
+        function removeGameFromList(gameId, listName) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            fetch('/api/remove-from-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': user.user_id
+                },
+                body: JSON.stringify({ gameId, listName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    fetchUserLists();
+                } else {
+                    alert(data.error || 'Failed to remove game from list.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -26,6 +26,8 @@ BEGIN
 END;
 //
 
+DELIMITER $$
+
 CREATE TRIGGER trg_prevent_duplicate_email
 BEFORE INSERT ON Users
 FOR EACH ROW
@@ -33,8 +35,9 @@ BEGIN
     IF EXISTS (SELECT 1 FROM Users WHERE email = NEW.email) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Duplicate email not allowed';
     END IF;
-END;
-//
+END$$
+
+DELIMITER ;
 
 DELIMITER //
 

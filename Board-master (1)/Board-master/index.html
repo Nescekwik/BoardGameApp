@@ -13,9 +13,10 @@
         <div class="user-menu">
             <button id="userButton">User</button>
             <div class="user-dropdown" id="userDropdown">
-                <button onclick="window.location.href='login.html'">Connexion</button>
-                <button>Profil</button>
-                <button>Log out</button>
+                <button id="connectBtn" onclick="window.location.href='login.html'">Connect</button>
+                <button id="createAccountBtn" onclick="window.location.href='create-account.html'">Create Account</button>
+                <button id="disconnectBtn" style="display:none;">Disconnect</button>
+                <button id="userPageBtn" onclick="window.location.href='user.html'">User Page</button>
             </div>
         </div>
     </header>
@@ -77,23 +78,7 @@
     <div id="gameList">
         <!-- Games will be dynamically populated here -->
     </div>
-
-    <script>
-        // Example of dynamically populating games with a delete button
-        function renderGames(games) {
-            const gameList = document.getElementById('gameList');
-            gameList.innerHTML = '';
-            games.forEach((game) => {
-                const gameItem = document.createElement('div');
-                gameItem.innerHTML = `
-                    <p>${game.game_name} (${game.release_date})</p>
-                    <button class="delete-button" onclick="deleteGame(${game.game_id})">❌</button>
-                `;
-                gameList.appendChild(gameItem);
-            });
-        }
-    </script>
-
+    <!-- Review Modal will be injected by JS -->
     <script src="script.js"></script>
 </body>
 </html>

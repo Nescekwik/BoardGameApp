@@ -17,15 +17,31 @@ BEGIN
     RETURN count_reviews;
 END;&&
 
-DELIMITER &&
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS GetGamesByCategory$$
+
 CREATE PROCEDURE GetGamesByCategory(IN cat_name VARCHAR(255))
 BEGIN
-    SELECT G.game_name
+    SELECT 
+        G.game_id, 
+        G.game_name, 
+        G.release_date, 
+        G.description, 
+        G.url, 
+        G.min_player, 
+        G.max_player, 
+        G.min_playtime, 
+        G.max_playtime, 
+        G.age_min, 
+        G.rating
     FROM Games G
     JOIN Is_Category IC ON G.game_id = IC.game_id
     JOIN Categories C ON C.category_id = IC.category_id
     WHERE C.category_name = cat_name;
-END;&&
+END$$
+
+DELIMITER ;
 
 DELIMITER &&
 CREATE PROCEDURE AddGameForEditor (
@@ -63,4 +79,3 @@ BEGIN
     VALUES (p_user_id, new_game_id);
 
 END;&&
-DELIMITER ;
