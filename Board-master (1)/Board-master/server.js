@@ -34,47 +34,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Get all games from the database
-app.get('/games', (req, res) => {
-    const query = `
-        SELECT 
-            game_id, 
-            game_name, 
-            DATE_FORMAT(release_date, '%Y-%m-%d') AS release_date, 
-            description, 
-            url, 
-            min_player, 
-            max_player, 
-            min_playtime, 
-            max_playtime, 
-            age_min, 
-            rating 
-        FROM Games`;
-    db.query(query, (err, results) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        if (results.length === 0) {
-            res.json([{ 
-                game_id: 1, 
-                game_name: "Sample Game", 
-                release_date: "2025-01-01", 
-                description: "This is a sample game description.", 
-                url: "https://example.com", 
-                min_player: 2, 
-                max_player: 4, 
-                min_playtime: 30, 
-                max_playtime: 60, 
-                age_min: 8, 
-                rating: 5 
-            }]);
-        } else {
-            res.json(results);
-        }
-    });
-});
-
 // Add this endpoint for frontend compatibility
 app.get('/api/games', (req, res) => {
     const query = `
@@ -526,6 +485,48 @@ app.post('/api/remove-from-list', (req, res) => {
             res.status(404).json({ error: 'Game not found in the list.' });
         } else {
             res.json({ message: 'Game removed from your list successfully!' });
+        }
+    });
+});
+
+// Leaderboard: Top 5 games by rating (using the Leaderboards view)
+app.get('/api/leaderboard', (req, res) => {
+    const query = `
+        SELECT game_id, game_name, average_score
+        FROM Leaderboards
+        ORDER BY average_score DESC
+        LIMIT 5
+    `;
+    db.query(query, (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(results);
+    });
+});
+
+// User Activity: total reviews and avg score for current user (using the UserActivity view)
+app.get('/api/user-activity', (req, res) => {
+    const userId = req.headers['x-user-id'];
+    if (!userId) {
+        res.status(400).json({ error: 'User ID is required.' });
+        return;
+    }
+    const query = `
+        SELECT total_reviews, avg_score
+        FROM UserActivity
+        WHERE user_id = ?
+    `;
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (results.length > 0) {
+            res.json(results[0]);
+        } else {
+            res.json({ total_reviews: 0, avg_score: null });
         }
     });
 });

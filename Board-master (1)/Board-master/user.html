@@ -18,6 +18,14 @@
         <h2 id="userName">User Name</h2>
     </section>
 
+    <!-- User Activity Section -->
+    <section id="userActivitySection" style="max-width:600px;margin:0 auto 20px auto;background:#fff;border-radius:10px;box-shadow:0 4px 8px #0001;padding:20px 30px;">
+        <h2>Your Activity</h2>
+        <div id="userActivityStats">
+            <!-- Stats will be populated here -->
+        </div>
+    </section>
+
     <section>
         <h2>Create a New List with a Game</h2>
         <form id="createListForm">
@@ -209,6 +217,26 @@
                     }
                 });
             });
+
+            // Fetch user activity
+            function fetchUserActivity() {
+                fetch('/api/user-activity', {
+                    headers: { 'x-user-id': user.user_id }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const statsDiv = document.getElementById('userActivityStats');
+                    if (data && typeof data.total_reviews !== 'undefined') {
+                        statsDiv.innerHTML = `
+                            <div><strong>Total Reviews:</strong> ${data.total_reviews}</div>
+                            <div><strong>Average Score:</strong> ${data.avg_score !== null ? data.avg_score : 'N/A'}</div>
+                        `;
+                    } else {
+                        statsDiv.innerHTML = '<div>No activity found.</div>';
+                    }
+                });
+            }
+            fetchUserActivity();
         });
 
         function fetchUserLists() {

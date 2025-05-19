@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to fetch games from the backend and display them
     function fetchGames(filterCategory = 'all') {
-        let url = 'http://localhost:3000/games';
+        let url = 'http://localhost:3000/api/games';
         if (filterCategory !== 'all') {
             url = `http://localhost:3000/games/category/${filterCategory}`;
         }
@@ -513,6 +513,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 reviewModal.style.display = 'block';
             });
     }
+
+    // Fetch and display leaderboard
+    function fetchLeaderboard() {
+        fetch('http://localhost:3000/api/leaderboard')
+            .then(res => res.json())
+            .then(data => {
+                const leaderboardList = document.getElementById('leaderboardList');
+                if (!leaderboardList) return;
+                leaderboardList.innerHTML = '';
+                if (Array.isArray(data) && data.length > 0) {
+                    data.forEach((game, idx) => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${game.game_name}</strong> (Rating: ${game.average_score})`;
+                        leaderboardList.appendChild(li);
+                    });
+                } else {
+                    leaderboardList.innerHTML = '<li>No games found.</li>';
+                }
+            });
+    }
+    fetchLeaderboard();
 
     updateUserMenu();
 });
