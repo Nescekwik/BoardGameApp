@@ -242,7 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <ul>
                                         ${reviews.map(r => `
                                             <li>
-                                                <strong>${r.username}</strong> 
+                                                <a href="user.html?user_id=${r.user_id}" class="review-username-link" data-userid="${r.user_id}">
+                                                    ${r.username}
+                                                </a>
                                                 <span style="color:#888;">(${r.review_date ? r.review_date.substring(0,10) : ''})</span>
                                                 <br>
                                                 Score: ${r.score}, ${r.like ? 'Liked' : 'Not Liked'}
@@ -252,6 +254,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                         `).join('')}
                                     </ul>
                                 `;
+                                // Add event listeners to username links to prevent event bubbling
+                                publicReviewsDiv.querySelectorAll('.review-username-link').forEach(link => {
+                                    link.addEventListener('click', function(e) {
+                                        e.stopPropagation();
+                                        // Allow default navigation
+                                    });
+                                });
                             }
                         });
                 } else {
@@ -525,7 +534,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (Array.isArray(data) && data.length > 0) {
                     data.forEach((game, idx) => {
                         const li = document.createElement('li');
-                        li.innerHTML = `<strong>${game.game_name}</strong> (Rating: ${game.average_score})`;
+                        // Add top1/top2/top3 class for styling
+                        if (idx === 0) li.classList.add('top1');
+                        if (idx === 1) li.classList.add('top2');
+                        if (idx === 2) li.classList.add('top3');
+                        li.innerHTML = `
+                            <span class="rank-badge">${idx + 1}</span>
+                            <span class="game-name">${game.game_name}</span>
+                            <span class="game-rating">★ ${game.average_score}</span>
+                        `;
                         leaderboardList.appendChild(li);
                     });
                 } else {
@@ -534,6 +551,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
     fetchLeaderboard();
+
+    // --- Search functionality ---
+    const gameSearchInput = document.getElementById('gameSearchInput');
+    const gameSearchButton = document.getElementById('gameSearchButton');
+
+    function fetchGamesByName(name) {
+        fetch(`http://localhost:3000/api/games/search?name=${encodeURIComponent(name)}`)
+            .then(response => response.json())
+            .then(games => {
+                displayGames(games);
+            })
+            .catch(error => console.error('Error searching games:', error));
+    }
+
+    gameSearchButton.addEventListener('click', () => {
+        const name = gameSearchInput.value.trim();
+        if (name.length === 0) {
+            fetchGames(); // Show all if empty
+        } else {
+            fetchGamesByName(name);
+        }
+    });
+
+    gameSearchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            gameSearchButton.click();
+        }
+    });
 
     updateUserMenu();
 });

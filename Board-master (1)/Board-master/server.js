@@ -59,6 +59,38 @@ app.get('/api/games', (req, res) => {
     });
 });
 
+// --- Add search endpoint for games by name ---
+app.get('/api/games/search', (req, res) => {
+    const name = req.query.name;
+    if (!name) {
+        res.status(400).json({ error: 'Missing name parameter.' });
+        return;
+    }
+    const query = `
+        SELECT 
+            game_id, 
+            game_name, 
+            DATE_FORMAT(release_date, '%Y-%m-%d') AS release_date, 
+            description, 
+            url, 
+            min_player, 
+            max_player, 
+            min_playtime, 
+            max_playtime, 
+            age_min, 
+            rating 
+        FROM Games
+        WHERE game_name LIKE ?
+    `;
+    db.query(query, [`%${name}%`], (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(results);
+    });
+});
+
 // Get games by category using stored procedure
 app.get('/games/category/:categories', (req, res) => {
     const category = req.params.categories;

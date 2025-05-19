@@ -523,6 +523,108 @@ form button[type="submit"]:hover {
     background: #b71c1c;
 }
 
+/* Leaderboard Styles */
+#leaderboardSection {
+    max-width: 500px;
+    margin: 0 auto 16px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #0002;
+    padding: 16px 12px 12px 12px;
+    position: relative;
+}
+
+#leaderboardSection h2 {
+    color: #388e3c;
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+#leaderboardList {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+#leaderboardList li {
+    display: flex;
+    align-items: center;
+    background: #f4f8f4;
+    border-radius: 7px;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    font-size: 1rem;
+    box-shadow: 0 1px 4px #0001;
+    font-weight: 500;
+    position: relative;
+}
+
+#leaderboardList li .rank-badge {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    color: #388e3c;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 10px;
+    box-shadow: 0 1px 4px #0001;
+}
+
+#leaderboardList li.top1 .rank-badge {
+    background: linear-gradient(135deg, #ffd700 60%, #fffbe5 100%);
+    color: #bfa100;
+    font-size: 1.1rem;
+    border: 1.5px solid #ffe066;
+}
+#leaderboardList li.top2 .rank-badge {
+    background: linear-gradient(135deg, #c0c0c0 60%, #f2f2f2 100%);
+    color: #888;
+    border: 1.5px solid #e0e0e0;
+}
+#leaderboardList li.top3 .rank-badge {
+    background: linear-gradient(135deg, #cd7f32 60%, #fbeee0 100%);
+    color: #a0522d;
+    border: 1.5px solid #e0c097;
+}
+
+#leaderboardList li .game-name {
+    flex: 1;
+    color: #222;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+#leaderboardList li .game-rating {
+    margin-left: 10px;
+    color: #4CAF50;
+    font-size: 1em;
+    font-weight: bold;
+    background: #e8f5e9;
+    border-radius: 5px;
+    padding: 2px 8px;
+    box-shadow: 0 1px 4px #0001;
+}
+
+/* Username link in reviews - subtle clickable green */
+.review-username-link {
+    color: #5cbf7c;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.review-username-link:hover,
+.review-username-link:focus {
+    color: #388e3c;
+    text-decoration: underline;
+}
+
 @media (max-width: 700px) {
     #userProfile, #userLists, form {
         max-width: 98vw;
@@ -532,5 +634,20 @@ form button[type="submit"]:hover {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+    }
+    #leaderboardSection {
+        padding: 8px 2vw 8px 2vw;
+        max-width: 98vw;
+    }
+    #leaderboardList li {
+        font-size: 0.95rem;
+        padding: 6px 4px;
+    }
+    #leaderboardList li .rank-badge {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: 0.85rem;
+        margin-right: 6px;
     }
 }
