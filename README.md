@@ -13,3 +13,5 @@ Details.csv: Core metadata and descriptions of games.
 
 Ratings.csv: Ranking and user rating metrics.
 
+Sancesario Tom / Chartier Max / Musquin Maxime
+
