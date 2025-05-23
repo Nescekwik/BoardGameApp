@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root', // Your MySQL username
-    password: 'Maxchart1!', // Your MySQL password
+    host: '',
+    user: '', // Your MySQL username
+    password: '!', // Your MySQL password
     database: 'boardgames_db'
 });
 
