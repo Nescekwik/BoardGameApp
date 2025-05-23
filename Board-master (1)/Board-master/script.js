@@ -184,9 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Details (expandable)
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'game-details';
-            detailsDiv.innerHTML = `
-                <a href="${game.url}" target="_blank">Visit game website</a>
-            `;
+            // --- Revert to website link ---
+            detailsDiv.innerHTML = game.url
+                ? `<a href="${game.url}" target="_blank">Visit game website</a>`
+                : '';
 
             // User review info and button (only for non-admins)
             let reviewInfoDiv = '';
@@ -242,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <ul>
                                         ${reviews.map(r => `
                                             <li>
-                                                <a href="user.html?user_id=${r.user_id}" class="review-username-link" data-userid="${r.user_id}">
+                                                <a href="user.html?user_id=${r.user_id}" class="review-username-link" data-userid="${r.user_id}" style="color:#388e3c;font-weight:bold;text-decoration:underline;cursor:pointer;">
                                                     ${r.username}
                                                 </a>
                                                 <span style="color:#888;">(${r.review_date ? r.review_date.substring(0,10) : ''})</span>
@@ -538,8 +539,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (idx === 0) li.classList.add('top1');
                         if (idx === 1) li.classList.add('top2');
                         if (idx === 2) li.classList.add('top3');
+                        // Use emoji medals for top 3, numbers for others
+                        let badge = '';
+                        if (idx === 0) badge = '<span class="rank-badge" title="1st Place">🥇</span>';
+                        else if (idx === 1) badge = '<span class="rank-badge" title="2nd Place">🥈</span>';
+                        else if (idx === 2) badge = '<span class="rank-badge" title="3rd Place">🥉</span>';
+                        else badge = `<span class="rank-badge" style="background:#e0e0e0;color:#388e3c;">${idx + 1}</span>`;
                         li.innerHTML = `
-                            <span class="rank-badge">${idx + 1}</span>
+                            ${badge}
                             <span class="game-name">${game.game_name}</span>
                             <span class="game-rating">★ ${game.average_score}</span>
                         `;
@@ -551,6 +558,54 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
     fetchLeaderboard();
+
+    // --- Hot Games This Month ---
+    function fetchHotGames() {
+        fetch('http://localhost:3000/api/most-reviewed-this-month')
+            .then(res => res.json())
+            .then(data => {
+                const hotGamesList = document.getElementById('hotGamesList');
+                if (!hotGamesList) return;
+                hotGamesList.innerHTML = '';
+                if (Array.isArray(data) && data.length > 0) {
+                    data.slice(0, 5).forEach((game, idx) => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <span style="font-weight:600;color:#222;">${game.game_name}</span>
+                            <span style="color:#4CAF50;font-weight:bold;margin-left:8px;">${game.review_count} reviews</span>
+                        `;
+                        hotGamesList.appendChild(li);
+                    });
+                } else {
+                    hotGamesList.innerHTML = '<li>No hot games this month.</li>';
+                }
+            });
+    }
+    fetchHotGames();
+
+    // --- Most Reviewed This Month ---
+    function fetchMostReviewed() {
+        fetch('http://localhost:3000/api/most-reviewed-this-month')
+            .then(res => res.json())
+            .then (data => {
+                const mostReviewedList = document.getElementById('mostReviewedList');
+                if (!mostReviewedList) return;
+                mostReviewedList.innerHTML = '';
+                if (Array.isArray(data) && data.length > 0) {
+                    data.slice(0, 5).forEach((game, idx) => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <span style="font-weight:600;color:#222;">${game.game_name}</span>
+                            <span style="color:#4CAF50;font-weight:bold;margin-left:8px;">${game.review_count} reviews</span>
+                        `;
+                        mostReviewedList.appendChild(li);
+                    });
+                } else {
+                    mostReviewedList.innerHTML = '<li>No reviews this month.</li>';
+                }
+            });
+    }
+    fetchMostReviewed();
 
     // --- Search functionality ---
     const gameSearchInput = document.getElementById('gameSearchInput');

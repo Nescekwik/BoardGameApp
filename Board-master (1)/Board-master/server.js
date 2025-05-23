@@ -122,15 +122,18 @@ app.get('/review/:gameId/:userId', (req, res) => {
     });
 });
 
-// Add a review using stored procedure (AddReview)
+// Add a review using stored procedure (SafeAddReview)
 app.post('/review', (req, res) => {
     const { game_id, user_id, score, review, like } = req.body;
-    const query = 'CALL AddReview(?, ?, ?, ?, ?)';
+    const query = 'CALL SafeAddReview(?, ?, ?, ?, ?)';
+
     db.query(query, [game_id, user_id, score, review, like], (err, result) => {
         if (err) {
             // Handle duplicate review error from trigger
             if (err.sqlState === '45000' && err.sqlMessage.includes('already reviewed')) {
                 res.status(400).json({ error: 'You have already reviewed this game.' });
+            } else if (err.sqlState === '45000' && err.sqlMessage.includes('✨ Cannot review a deleted game ✨')) {
+                res.status(400).json({ error: 'Cannot review a deleted game.' });
             } else {
                 res.status(500).json({ error: err.message });
             }
@@ -527,6 +530,23 @@ app.get('/api/leaderboard', (req, res) => {
         SELECT game_id, game_name, average_score
         FROM Leaderboards
         ORDER BY average_score DESC
+        LIMIT 5
+    `;
+    db.query(query, (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(results);
+    });
+});
+
+// Most Reviewed This Month: Top games by review count (using the MostReviewedThisMonth view)
+app.get('/api/most-reviewed-this-month', (req, res) => {
+    const query = `
+        SELECT game_id, game_name, review_count, average_score
+        FROM MostReviewedThisMonth
+        ORDER BY review_count DESC
         LIMIT 5
     `;
     db.query(query, (err, results) => {

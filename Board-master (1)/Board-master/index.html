@@ -36,11 +36,20 @@
         <button id="gameSearchButton" style="padding:8px 16px;border-radius:5px;background:#4CAF50;color:#fff;border:none;cursor:pointer;margin-left:8px;">Search</button>
     </section>
 
+    <!-- Leaderboard & Hot Games Side by Side -->
+<div id="sideBySideStats">
     <!-- Leaderboard Section -->
-    <section id="leaderboardSection" style="max-width:700px;margin:0 auto 20px auto;background:#fff;border-radius:10px;box-shadow:0 4px 8px #0001;padding:20px 30px;">
-        <h2 style="color:#4CAF50;text-align:center;">Top 5 Games Leaderboard</h2>
-        <ol id="leaderboardList" style="padding-left:20px;"></ol>
+    <section id="leaderboardSection">
+        <h2>Top 5 Games Leaderboard</h2>
+        <ol id="leaderboardList"></ol>
     </section>
+
+    <!-- Hot Games This Month Section -->
+    <section id="hotGamesSection">
+        <h3>🔥 Hot Games This Month</h3>
+        <ol id="hotGamesList"></ol>
+    </section>
+</div>
 
     <!-- Add Game Button -->
 <div class="add-button-container">
@@ -92,5 +101,8 @@
     </div>
     <!-- Review Modal will be injected by JS -->
     <script src="script.js"></script>
+    <footer style="text-align:center;margin:32px 0 12px 0;color:#888;font-size:1em;">
+        created by Max Chartier, Tom Sancesario, Maxime Musquin
+    </footer>
 </body>
 </html>
